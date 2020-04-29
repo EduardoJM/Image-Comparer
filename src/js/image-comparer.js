@@ -51,16 +51,9 @@ class ImageCompare {
     }
 
     /**
-     * Create the Component Structure.
+     * Compute and apply the sizes to the component structure.
      */
-    _createStructure() {
-        let id = this.element.getAttribute('id');
-        if (id == null || id === undefined || id === "") {
-            id = this._utilGenerateId('image-compare');
-            this.element.setAttribute("id", id);
-        }
-        // add image-compare to element classList
-        this.element.classList.add("image-compare");
+    _applySize() {
         // set the element width
         if (this.options.width.toString().endsWith('%')
             || this.options.width.toString().endsWith('px')) {
@@ -80,6 +73,50 @@ class ImageCompare {
             element_height = this._utilAspectRatioH(element_width, "16/9");
         }
         this.element.style.height = `${element_height}px`;
+        return {
+            element_width,
+            element_height,
+        };
+    }
+
+    /**
+     * Compute and apply the sizes to the component structure
+     * and to the child images and reposition the slider to center.
+     */
+    _applySizeComplete() {
+        const { element_width, element_height } = this._applySize();
+        // console.log(element_height);
+        // resize the images
+        const images = this.element.querySelectorAll('.image-wrapper');
+        images.forEach(element => {
+            element.style.width = `${element_width}px`;
+            element.style.height = `${element_height}px`;
+        });
+        // resize the container overlay
+        this.containerOverlay.style.width = `${element_width / 2}px`;
+        // reposition the slider
+        const slider_top = element_height / 2 - this._utilGetHeight(this.slider) / 2;
+        const slider_left = element_width / 2 - this._utilGetWidth(this.slider) / 2;
+        this.slider.style.top = `${slider_top}px`;
+        this.slider.style.left = `${slider_left}px`;
+        return {
+            element_width,
+            element_height,
+        };
+    }
+
+    /**
+     * Create the Component Structure.
+     */
+    _createStructure() {
+        let id = this.element.getAttribute('id');
+        if (id == null || id === undefined || id === "") {
+            id = this._utilGenerateId('image-compare');
+            this.element.setAttribute("id", id);
+        }
+        // add image-compare to element classList
+        this.element.classList.add("image-compare");
+        const { element_width, element_height } = this._applySize();
         // create the container and overlay and append to element
         this.container = document.createElement('div');
         this.container.classList.add('image-container');
@@ -160,30 +197,7 @@ class ImageCompare {
     }
 
     _resize = () => {
-        const element_width = this._utilGetWidth(this.element);
-        // compute and the height
-        let element_height = this.options.height;
-        if (this.options.height === '16/9'
-            || this.options.height === '21/9'
-            || this.options.height === '4/3') {
-            element_height = this._utilAspectRatioH(element_width, this.options.height);
-        } else if (this.options.height === 'auto') {
-            element_height = this._utilAspectRatioH(element_width, "16/9")
-        }
-        this.element.style.height = `${element_height}px`;
-        // resize the images
-        const images = document.querySelectorAll('.image-wrapper');
-        images.forEach(element => {
-            element.style.width = `${element_width}px`;
-            element.style.height = `${element_height}px`;
-        });
-        // resize the container overlay
-        this.containerOverlay.style.width = `${element_width/2}px`;
-        // reposition the slider
-        const slider_top = element_height / 2 - this._utilGetHeight(this.slider) / 2;
-        const slider_left = element_width / 2 - this._utilGetWidth(this.slider) / 2;
-        this.slider.style.top = `${slider_top}px`;
-        this.slider.style.left = `${slider_left}px`;
+        const { element_width, element_height } = this._applySizeComplete();
         if (this.options.onResize != null 
             && this.options.onResize !== undefined) {
             this.options.onResize(element_width, element_height, this.element)

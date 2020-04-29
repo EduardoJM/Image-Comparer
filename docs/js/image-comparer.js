@@ -1,6 +1,6 @@
 /**
  * Materialize Image Comparer - A little plugin that implements a image comparer (based on MetroUI) to Materializecss framework.
- * @version v1.0.0
+ * @version v1.0.1
  * @author Eduardo Oliveira (EduardoJM) <eduardo_y05@outlook.com>.
  * @link https://github.com/EduardoJM/Materialize-Image-Comparer
  * 
@@ -71,31 +71,9 @@ var ImageCompare = /*#__PURE__*/function () {
     });
 
     _defineProperty(this, "_resize", function () {
-      var element_width = _this._utilGetWidth(_this.element); // compute and the height
-
-
-      var element_height = _this.options.height;
-
-      if (_this.options.height === '16/9' || _this.options.height === '21/9' || _this.options.height === '4/3') {
-        element_height = _this._utilAspectRatioH(element_width, _this.options.height);
-      } else if (_this.options.height === 'auto') {
-        element_height = _this._utilAspectRatioH(element_width, "16/9");
-      }
-
-      _this.element.style.height = "".concat(element_height, "px"); // resize the images
-
-      var images = document.querySelectorAll('.image-wrapper');
-      images.forEach(function (element) {
-        element.style.width = "".concat(element_width, "px");
-        element.style.height = "".concat(element_height, "px");
-      }); // resize the container overlay
-
-      _this.containerOverlay.style.width = "".concat(element_width / 2, "px"); // reposition the slider
-
-      var slider_top = element_height / 2 - _this._utilGetHeight(_this.slider) / 2;
-      var slider_left = element_width / 2 - _this._utilGetWidth(_this.slider) / 2;
-      _this.slider.style.top = "".concat(slider_top, "px");
-      _this.slider.style.left = "".concat(slider_left, "px");
+      var _this$_applySizeCompl = _this._applySizeComplete(),
+          element_width = _this$_applySizeCompl.element_width,
+          element_height = _this$_applySizeCompl.element_height;
 
       if (_this.options.onResize != null && _this.options.onResize !== undefined) {
         _this.options.onResize(element_width, element_height, _this.element);
@@ -174,24 +152,13 @@ var ImageCompare = /*#__PURE__*/function () {
       this._createEvents();
     }
     /**
-     * Create the Component Structure.
+     * Compute and apply the sizes to the component structure.
      */
 
   }, {
-    key: "_createStructure",
-    value: function _createStructure() {
-      var _this2 = this;
-
-      var id = this.element.getAttribute('id');
-
-      if (id == null || id === undefined || id === "") {
-        id = this._utilGenerateId('image-compare');
-        this.element.setAttribute("id", id);
-      } // add image-compare to element classList
-
-
-      this.element.classList.add("image-compare"); // set the element width
-
+    key: "_applySize",
+    value: function _applySize() {
+      // set the element width
       if (this.options.width.toString().endsWith('%') || this.options.width.toString().endsWith('px')) {
         this.element.style.width = this.options.width;
       } else {
@@ -210,7 +177,66 @@ var ImageCompare = /*#__PURE__*/function () {
         element_height = this._utilAspectRatioH(element_width, "16/9");
       }
 
-      this.element.style.height = "".concat(element_height, "px"); // create the container and overlay and append to element
+      this.element.style.height = "".concat(element_height, "px");
+      return {
+        element_width: element_width,
+        element_height: element_height
+      };
+    }
+    /**
+     * Compute and apply the sizes to the component structure
+     * and to the child images and reposition the slider to center.
+     */
+
+  }, {
+    key: "_applySizeComplete",
+    value: function _applySizeComplete() {
+      var _this$_applySize = this._applySize(),
+          element_width = _this$_applySize.element_width,
+          element_height = _this$_applySize.element_height; // console.log(element_height);
+      // resize the images
+
+
+      var images = this.element.querySelectorAll('.image-wrapper');
+      images.forEach(function (element) {
+        element.style.width = "".concat(element_width, "px");
+        element.style.height = "".concat(element_height, "px");
+      }); // resize the container overlay
+
+      this.containerOverlay.style.width = "".concat(element_width / 2, "px"); // reposition the slider
+
+      var slider_top = element_height / 2 - this._utilGetHeight(this.slider) / 2;
+      var slider_left = element_width / 2 - this._utilGetWidth(this.slider) / 2;
+      this.slider.style.top = "".concat(slider_top, "px");
+      this.slider.style.left = "".concat(slider_left, "px");
+      return {
+        element_width: element_width,
+        element_height: element_height
+      };
+    }
+    /**
+     * Create the Component Structure.
+     */
+
+  }, {
+    key: "_createStructure",
+    value: function _createStructure() {
+      var _this2 = this;
+
+      var id = this.element.getAttribute('id');
+
+      if (id == null || id === undefined || id === "") {
+        id = this._utilGenerateId('image-compare');
+        this.element.setAttribute("id", id);
+      } // add image-compare to element classList
+
+
+      this.element.classList.add("image-compare");
+
+      var _this$_applySize2 = this._applySize(),
+          element_width = _this$_applySize2.element_width,
+          element_height = _this$_applySize2.element_height; // create the container and overlay and append to element
+
 
       this.container = document.createElement('div');
       this.container.classList.add('image-container');
