@@ -51,6 +51,10 @@ var ImageCompare = /*#__PURE__*/function () {
     this.eventStartAll = this.eventStartAll.bind(this);
     this.eventStopAll = this.eventStopAll.bind(this);
     this.create();
+    this.events = {
+      RESIZE: new Event('resize'),
+      SLIDERMOVE: new Event('slidermove')
+    };
   }
   /**
    * Set the options from DOM data-*
@@ -245,6 +249,8 @@ var ImageCompare = /*#__PURE__*/function () {
       if (this.options.onSliderMove != null && this.options.onSliderMove !== undefined) {
         this.options.onSliderMove(x, leftPos, this.slider);
       }
+
+      this.element.dispatchEvent(this.events.SLIDERMOVE);
     }
   }, {
     key: "eventStopAll",
@@ -270,6 +276,8 @@ var ImageCompare = /*#__PURE__*/function () {
       if (this.options.onResize != null && this.options.onResize !== undefined) {
         this.options.onResize(elementWidth, elementHeight, this.element);
       }
+
+      this.element.dispatchEvent(this.events.RESIZE);
     }
     /**
      * Create the component events.
