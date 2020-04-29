@@ -1,8 +1,10 @@
 .image-compare {
+    /* make the container relative to position the other items */
     position: relative;
     display: block;
-
+    
     img {
+        /* hide the original images */
         display: none;
     }
 
@@ -22,7 +24,6 @@
         .image-wrapper {
             background-size: cover;
         }
-
     }
 
     .image-slider {

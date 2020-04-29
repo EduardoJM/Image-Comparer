@@ -8,9 +8,11 @@
  */
 
 .image-compare {
+  /* make the container relative to position the other items */
   position: relative;
   display: block; }
   .image-compare img {
+    /* hide the original images */
     display: none; }
   .image-compare .image-container, .image-compare .image-container-overlay {
     position: absolute;
