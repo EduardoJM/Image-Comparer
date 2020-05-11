@@ -20,7 +20,7 @@ class ImageCompare { // eslint-disable-line no-unused-vars
      * @param {function} options.onSliderMove - The slider move event callback.
      */
     constructor(elem, options = {}) {
-        this.options = Object.assign(ImageCompareDefaultOptions, options);
+        this.options = Object.assign({}, ImageCompareDefaultOptions, options);
         this.element = elem;
         this.setOptionsFromDOM();
         this.eventMoveAll = this.eventMoveAll.bind(this);

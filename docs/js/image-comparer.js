@@ -43,7 +43,7 @@ var ImageCompare = /*#__PURE__*/function () {
 
     _classCallCheck(this, ImageCompare);
 
-    this.options = Object.assign(ImageCompareDefaultOptions, options);
+    this.options = Object.assign({}, ImageCompareDefaultOptions, options);
     this.element = elem;
     this.setOptionsFromDOM();
     this.eventMoveAll = this.eventMoveAll.bind(this);
