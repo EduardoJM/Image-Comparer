@@ -1,6 +1,6 @@
-# Materialize Image Comparer
+# Image Comparer
 
-This component takes the name of materialize, but it's not a material design component. This name of materialize is because i create this (based on MetroUI component) for my personal use in my materialize page, that i'm developing. The component visual is see in the image below.
+This component is created (in the first time, based on MetroUI component code) for my personal use in my materialize pages. The component visual is see in the image below.
 
 ![Alternative](docs/images/demo/preview.jpg)
 
@@ -8,7 +8,7 @@ This component takes the name of materialize, but it's not a material design com
 
 ### Add reference for JavaScript and CSS
 
-Includes the image comparer css and javascript (materialize is not required for the component).
+Includes the image comparer css and javascript.
 
 ```html
 <!DOCTYPE html>
@@ -17,13 +17,13 @@ Includes the image comparer css and javascript (materialize is not required for 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/EduardoJM/Materialize-Image-Comparer@1.0.2/dist/css/image-comparer.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/EduardoJM/Image-Comparer@1.0.2/dist/css/image-comparer.min.css" />
     <title>Document</title>
 </head>
 <body>
 
     
-    <script src="https://cdn.jsdelivr.net/gh/EduardoJM/Materialize-Image-Comparer@1.0.2/dist/js/image-comparer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/EduardoJM/Image-Comparer@1.0.2/dist/js/image-comparer.min.js"></script>
 </body>
 </html>
 ```
@@ -44,7 +44,7 @@ var el = document.querySelector('.image-compare');
 var comp = new ImageCompare(el, options);
 ```
 
-For more informations see the [documentation](https://eduardojm.github.io/Materialize-Image-Comparer/) (the documentation is in development for now, then sorry for bad explained things for now).
+For more informations see the [documentation](https://eduardojm.github.io/Image-Comparer/) (the documentation is in development for now, then sorry for bad explained things for now).
 
 ## Building
 
@@ -53,8 +53,8 @@ In the `./dist/` folder has a builded distribution of the javascript and the css
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/EduardoJM/Materialize-Image-Comparer.git
-cd Materialize-Image-Comparer
+git clone https://github.com/EduardoJM/Image-Comparer.git
+cd Image-Comparer
 ```
 
 ### Install Dependencies
