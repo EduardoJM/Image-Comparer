@@ -1,0 +1,47 @@
+---
+layout: default
+title: Events
+parent: reference
+---
+
+<h3>Component Events</h3>
+
+<p>The component has the callbacks in the options for use in constructor, but the component has events too. See the examples below for the use of the events. The supported events are:
+    <ul>
+        <li><code>resize</code></li>
+        <li><code>slidermove</code></li>
+    </ul>
+</p>
+
+<div class="example">
+    <div class="example-title"><h6 class="light">Events in HTML</h6></div>
+    <div class="example-block">
+        <div class="image-compare auto" id="events-element">
+            <img src="./images/comparer-1.jpg">
+            <img src="./images/comparer-2.jpg">
+        </div>
+        <script>
+            document.getElementById('events-element').addEventListener('slidermove', function(){
+                console.log("slider moved");
+            });
+            document.getElementById('events-element').addEventListener('resize', function(){
+                console.log("resizing component");
+            });
+        </script>
+    </div>
+    <div class="example-code">
+        <pre><code class="language-html">&lt;div class="image-compare" id="events-element"&gt;
+    &lt;img src="./images/comparer-1.jpg"&gt;
+    &lt;img src="./images/comparer-2.jpg"&gt;
+&lt;/div&gt;</code></pre>
+
+        <pre><code class="language-javascript">document.getElementById('events-element').addEventListener('slidermove', function(){
+    console.log("slider moved");
+});
+document.getElementById('events-element').addEventListener('resize', function(){
+    console.log("resizing component");
+});</code></pre>
+    </div>
+</div>
+
+<p><b>Note: </b>one issue in this events is: that's not receiving data from the component. I want to change this in the future.</p>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Building | Image-Comparer</title>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <!-- Materialize -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+    <!-- Prism -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PrismJS/prism@1.20.0/themes/prism.css" />
+    <!-- Image Comparer -->
+    <link rel="stylesheet" href="./css/image-comparer.min.css" />
+    <!-- Local -->
+    <link rel="stylesheet" href="./css/docs.css" />
+</head>
+<body>
+    
+    <header>
+        <nav class="blue darken-4">
+            <div class="nav-wrapper">
+                <ul class="left hide-on-large-only">
+                    <li>
+                        <a data-target="sidebar" class="sidenav-trigger" href="#">
+                            <i class="material-icons">menu</i>
+                        </a>
+                    </li>
+                </ul>
+                <div style="flex: 1;"></div>
+                <ul class="right hide-on-med-and-down">
+                    <li><a target="_blank" href="https://eduardojm.github.io/">Creator</a></li>
+                    <li><a target="_blank" href="https://github.com/EduardoJM/Image-Comparer">GitHub</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <ul id="sidebar" class="sidenav sidenav-fixed">
+            <!-- Home -->
+            <li class="bold">
+                <a href="index.html">Home</a>
+            </li>
+            <li class="bold">
+                <a href="started.html">Getting Started</a>
+            </li>
+            <li class="bold">
+                <a href="build.html">Building</a>
+            </li>
+            <!-- Contexto Histórico -->
+            <li class="no-padding">
+                <ul class="collapsible collapsible-accordion">
+                    <li class="bold">
+                        <a class="collapsible-header waves-effect waves-blue" tabindex="0">
+                            <span>
+                                Reference
+                            </span>
+                            <i class="material-icons">arrow_drop_down</i>
+                        </a>
+                        <div class="collapsible-body">
+                            <ul>
+                                <li>
+                                    <a href="options.html">Component Options</a>
+                                </li>
+                                <li>
+                                    <a href="events.html">Events</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </header>
+
+    <main>
+        <div class="container">
+
+            <h3>Building</h3>
+
+<p>The distributed files are avaliable in the GitHub repository, but if you want to build this component, you can make this with the folowing steps.</p>
+
+<h5>Clone the repository</h5>
+
+<pre><code class="language-bash">git clone https://github.com/EduardoJM/Image-Comparer.git</code></pre>
+
+<h5>Install dependencies</h5>
+
+<pre><code class="language-bash">cd Image-Comparer
+npm install</code></pre>
+
+<h5>Run Gulp Tasks</h5>
+
+<p>To build the sass and the javascript files, run the tasks:</p>
+
+<pre><code class="language-bash">gulp sass
+gulp js</code></pre>
+
+<p>If you want to watch for javascript source files modification, use the task:</p>
+
+<pre><code class="language-bash">gulp watchJS</code></pre>
+
+<p>And if you want to watch for sass source files modification, use the task:</p>
+
+<pre><code class="language-bash">gulp watchSASS</code></pre>
+                
+        </div>
+    </main>
+    
+    <!-- Materialize -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Prism -->
+    <script src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1.20.0/prism.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1.20.0/components/prism-bash.min.js"></script>
+    <!-- Image Comparer -->
+    <script src="./js/image-comparer.min.js"></script>
+    <!-- Initializer -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elements = document.querySelectorAll('.sidenav');
+            M.Sidenav.init(elements, {});
+            elements = document.querySelectorAll('.collapsible');
+            M.Collapsible.init(elements, {});
+            var comparers = document.querySelectorAll('.image-compare.auto');
+            comparers.forEach((element) => {
+                var comp = new ImageCompare(element, {});
+            });
+        });
+    </script>
+</body>
+</html>

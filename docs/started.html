@@ -1,0 +1,93 @@
+---
+layout: default
+title: Getting Started
+---
+
+<h3>Getting Started</h3>
+
+<h4>Load using JsDelivr CDN</h4>
+
+<p>The first step is add the css and javascript references to the <b>Image-Comparer</b> in your page, like the code below.</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;meta http-equiv="X-UA-Compatible" content="ie=edge"&gt;
+    &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/EduardoJM/Image-Comparer@1.0.2/dist/css/image-comparer.min.css" /&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+    
+    &lt;script src="https://cdn.jsdelivr.net/gh/EduardoJM/Image-Comparer@1.0.2/dist/js/image-comparer.min.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p>Then, the next step is add the component markup in your html page. The component markup is like the code below.</p>
+<pre><code class="language-html">&lt;div class="image-compare"&gt;
+    &lt;img src="./images/comparer-1.jpg"&gt;
+    &lt;img src="./images/comparer-2.jpg"&gt;
+&lt;/div&gt;</code></pre>
+
+<p>And now, initialize the component via JavaScript, like the code below.</p>
+
+<pre><code class="language-js">var el = document.querySelector('.image-compare');
+var comp = new ImageCompare(el, options);</code></pre>
+
+<h4 id="data-options">Setting options from data-*</h4>
+
+<p>In the component initialization is possible to set the component options, but if you need to initialize various elements and want to set the options individualy, is possible to set the options using the <code>data-*</code> html attribute, when <code>*</code> represents the option. One example of this is to set the element width with <code>data-width</code>, see in the code below.</p>
+<pre><code class="language-html">&lt;div class="image-compare" data-width="50%"&gt;
+    &lt;img src="./images/comparer-1.jpg"&gt;
+    &lt;img src="./images/comparer-2.jpg"&gt;
+&lt;/div&gt;</code></pre>
+
+<p>The supported <code>data-*</code> attributes is:
+    <ul>
+        <li><code>data-width</code></li>
+        <li><code>data-height</code></li>
+        <li><code>data-slider-class</code></li>
+        <li><code>data-slider-content</code></li>
+    </ul>
+</p>
+
+<div class="example">
+    <div class="example-title"><h6 class="light">Example</h6></div>
+    <div class="example-block">
+        <style>
+            .flex-icon-parent {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        </style>
+        <div
+            class="image-compare auto"
+            data-width="50%"
+            data-height="150px"
+            data-slider-class="circle flex-icon-parent red white-text"
+            data-slider-content="<i class='material-icons'>people</i>"
+        >
+            <img src="./images/comparer-1.jpg">
+            <img src="./images/comparer-2.jpg">
+        </div>
+    </div>
+    <div class="example-code">
+        <pre><code class="language-css">.flex-icon-parent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}</code></pre>
+        <pre><code class="language-html">&lt;div
+    class="image-compare auto"
+    data-width="50%"
+    data-height="150px"
+    data-slider-class="circle flex-icon-parent red white-text"
+    data-slider-content="&lt;i class='material-icons'&gt;people&lt;/i&gt;"
+&gt;
+    &lt;img src="./images/comparer-1.jpg"&gt;
+    &lt;img src="./images/comparer-2.jpg"&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+</div>

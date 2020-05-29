@@ -1,209 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Image Comparer</title>
-    <!-- Google Material Icons-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <!-- Materialize -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
-    <!-- Prism -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/PrismJS/prism@1.20.0/themes/prism.css" />
-    <!-- Image Comparer -->
-    <link rel="stylesheet" href="./css/image-comparer.min.css" />
-    <!-- Docs -->
-    <link rel="stylesheet" href="./css/docs.css" />
-</head>
-<body>
+---
+layout: default
+title: Home
+---
+<h1>Image Comparer</h1>
 
-    <div class="container">
+<div style="display: flex; align-items: center; justify-content: center;">
+    <div class="image-compare auto" data-width="70%" data-slider-class="circle blue">
+        <img src="./images/comparer-1.jpg">
+        <img src="./images/comparer-2.jpg">
+    </div>
+</div>
 
-        <h1>Image Comparer</h1>
+<h2>About</h2>
 
-        <h2>About</h2>
+<p>This component is developed for my personal projects. The initial code has based on MetroUI component code. This code is licensed under MIT license at <a href="https://github.com/EduardoJM/Image-Comparer">Github</a>.</p>
 
-        This component is not a material design component, but i need to use this in one of my personal projects, then i decided to create this component (this first version code is based on the MetroUI component), then i make it. This is licenced under the MIT Licence. See in <a href="https://github.com/EduardoJM/Image-Comparer">Github</a>.
+<h2>Component Information</h2>
 
-        <h2>Component Information</h2>
-
-        The image comparer component is created using the html notation
+<p>The image comparer component is created using the html notation</p>
 <pre><code class="language-html">&lt;div class="image-compare"&gt;
     &lt;img src="./images/comparer-1.jpg"&gt;
     &lt;img src="./images/comparer-2.jpg"&gt;
 &lt;/div&gt;</code></pre>
 
-        And the component is initialized by the JavaScript code
+<p>And the component is initialized by the JavaScript code</p>
 <pre><code class="language-js">var el = document.querySelector('.image-compare');
 var comp = new ImageCompare(el, options);</code></pre>
 
-        <h3>The component options</h3>
-
-        <ul>
-            <li><a href="#size">width</a></li>
-            <li><a href="#size">height</a></li>
-            <li><a href="#sliderClass">sliderClass</a></li>
-            <li><a href="#sliderContent">sliderContent</a></li>
-            <li><a href="#onResize">onResize</a> (event)</li>
-            <li><a href="#onSliderMove">onSliderMove</a> (event)</li>
-        </ul>
-
-        <h3>Setting options via <code>data-*</code></h3>
-
-        The initialization options can be setted directly in the html code in the <code>image-compare</code> div:
-<pre><code class="language-html">&lt;div class="image-compare" data-width="50%"&gt;
-    &lt;img src="./images/comparer-1.jpg"&gt;
-    &lt;img src="./images/comparer-2.jpg"&gt;
-&lt;/div&gt;</code></pre>
-
-        <h3 id="size">The component size</h3>
-
-        The component size can be set by the <code>width</code> and <code>height</code> property in options. The <code>width</code> and <code>height</code> properties accept <code>number</code>, <code>percent</code> or the aspect ratio for the height. Some examples of use this properties is below:
-        <h4 class="light">Fixed Width and Height</h4>
-        <div style="display: flex; justify-content: center">
-            <div class="image-compare fastinit" data-width="300" data-height="300">
-                <img src="./images/comparer-1.jpg">
-                <img src="./images/comparer-2.jpg">
-            </div>
-        </div>
-<pre><code class="language-html">&lt;div class="image-compare" data-width="300" data-height="300"&gt;
-    &lt;img src="./images/comparer-1.jpg"&gt;
-    &lt;img src="./images/comparer-2.jpg"&gt;
-&lt;/div&gt;</code></pre>
-
-        <h4 class="light">Fixed Width and Proportional Height</h4>
-
-        <div style="display: flex; justify-content: center">
-            <div class="image-compare fastinit" data-width="300px" data-height="auto">
-                <img src="./images/comparer-1.jpg">
-                <img src="./images/comparer-2.jpg">
-            </div>
-        </div>
-<pre><code class="language-html">&lt;div class="image-compare" data-width="300" data-height="auto"&gt;
-    &lt;img src="./images/comparer-1.jpg"&gt;
-    &lt;img src="./images/comparer-2.jpg"&gt;
-&lt;/div&gt;</code></pre>
-
-        <div style="display: flex; justify-content: center">
-            <div class="image-compare fastinit" data-width="300px" data-height="4/3">
-                <img src="./images/comparer-1.jpg">
-                <img src="./images/comparer-2.jpg">
-            </div>
-        </div>
-<pre><code class="language-html">&lt;div class="image-compare" data-width="300" data-height="4/3"&gt;
-    &lt;img src="./images/comparer-1.jpg"&gt;
-    &lt;img src="./images/comparer-2.jpg"&gt;
-&lt;/div&gt;</code></pre>
-
-        <h4>Relative Width and Proportional Height</h4>
-        
-        <div style="display: flex; justify-content: center">
-            <div class="image-compare fastinit" data-width="70%" data-height="4/3">
-                <img src="./images/comparer-1.jpg">
-                <img src="./images/comparer-2.jpg">
-            </div>
-        </div>
-<pre><code class="language-html">&lt;div class="image-compare" data-width="70%" data-height="4/3"&gt;
-    &lt;img src="./images/comparer-1.jpg"&gt;
-    &lt;img src="./images/comparer-2.jpg"&gt;
-&lt;/div&gt;</code></pre>
-
-        <h3 id="sliderClass">sliderClass</h3>
-
-        The <code>sliderClass</code> property in options is used to set classes to the slider in the image comparer. This property accepts <code>string</code> or <code>array</code>, if this is a string, this is added to <code>classList</code> property of the slider, but if is a array, each element in the array is added to <code>classList</code> of the slider. You can use this to set the color or format, like a circle, in the slider, see some examples:
-        <div style="display: flex; justify-content: center">
-            <div class="image-compare" id="image-compare-option-red-circle">
-                <img src="./images/comparer-1.jpg">
-                <img src="./images/comparer-2.jpg">
-            </div>
-        </div>
-<pre><code class="language-js">var el = document.getElementById('image-compare-option-red-circle');
-var comp = new ImageCompare(el, {
-    sliderClass: ['red', 'circle']
-});</code></pre>
-
-        <h3 id="sliderContent">sliderContent</h3>
-
-        The <code>sliderContent</code> property in options is used to set the content of the slider, for example if you need to add an icon in the slider. See an example:
-        <div style="display: flex; justify-content: center">
-            <div class="image-compare" id="image-compare-slider-content">
-                <img src="./images/comparer-1.jpg">
-                <img src="./images/comparer-2.jpg">
-            </div>
-        </div>
-<pre><code class="language-js">var el = document.getElementById('image-compare-slider-content');
-var comp = new ImageCompare(el, {
-    width: '70%',
-    sliderClass: ['red', 'circle', 'icon-to-center', 'noselect'],
-    sliderContent: '&lt;i class="material-icons"&gt;keyboard_tab&lt;/i&gt;',
-});</code></pre>
-        <h5 class="light">Observation</h5>
-        In the example above, is used a class <code>icon-to-center</code> to centralize the icon and <code>noselect</code> to disable the selection in the slider, for a best use of the icon. The style of the first class is just a flex display with align-items and justify-content to center, and the style of the second class is set the variants of <code>user-select</code> to none (taken from <a href="https://stackoverflow.com/a/4407335" target="blank">stackoverflow</a>), see:
-
-<pre><code class="language-css">.icon-to-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.noselect {
-    -webkit-touch-callout: none; /* iOS Safari */
-      -webkit-user-select: none; /* Safari */
-       -khtml-user-select: none; /* Konqueror HTML */
-         -moz-user-select: none; /* Old versions of Firefox */
-          -ms-user-select: none; /* Internet Explorer/Edge */
-              user-select: none; /* Non-prefixed version, currently
-                                    supported by Chrome, Opera and Firefox */
-}</code></pre>
-
-        <h3 id="onResize">onResize</h3>
-
-        The <code>onResize</code> event has the arguments <code>(width, height, element)</code>.
-
-<pre><code class="language-js">var el = document.querySelector('image-compare');
-var comp = new ImageCompare(el, {
-    width: '70%',
-    onResize: function(w, h, element) {
-        console.log("resized");
-    }
-});</code></pre>
-
-        <h3 id="onSliderMove">onSliderMove</h3>
-        
-        The <code>onSliderMove</code> event has the arguments <code>(x, left_slider_pos, slider_element)</code>. This event is raised when the slider is moved.
-
-<pre><code class="language-js">var el = document.querySelector('image-compare');
-var comp = new ImageCompare(el, {
-    width: '100%',
-    onSliderMove: function(x, pos, slider) {
-        console.log("moved");
-    }
-});</code></pre>
-
-    </div>
-
-    <!-- Materialize -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <!-- Prism -->
-    <script src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1.20.0/prism.js"></script>
-    <!-- Image Comparer -->
-    <script src="./js/image-comparer.min.js"></script>
-    <script>
-        var el = document.getElementById('image-compare-option-red-circle');
-        var comp = new ImageCompare(el, {
-            width: '70%',
-            sliderClass: ['red', 'circle'],
-        });
-        el = document.getElementById('image-compare-slider-content');
-        comp = new ImageCompare(el, {
-            width: '70%',
-            sliderClass: ['red', 'circle', 'icon-to-center', 'noselect'],
-            sliderContent: '<i class="material-icons">keyboard_tab</i>',
-        });
-        var autoinits = document.querySelectorAll('.image-compare.fastinit');
-        for (var i = 0; i < autoinits.length; i++) {
-            new ImageCompare(autoinits[i]);
-        }
-    </script>
-</body>
-</html>
+<p>See more in the <a href="/started.html">Getting Started</a> page.</p>
