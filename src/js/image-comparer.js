@@ -20,18 +20,20 @@ class ImageCompare { // eslint-disable-line no-unused-vars
      * @param {function} options.onSliderMove - The slider move event callback.
      */
     constructor(elem, options = {}) {
+        const isDeviceMobile = 'ontouchstart' in document.documentElement;
+        const [ up, down, move ] = (isDeviceMobile ? ['touchend', 'touchstart', 'touchmove'] : ['mouseup', 'mousedown', 'mousemove']);
+        this.deviceEvents = { up, down, move };
         this.options = Object.assign({}, ImageCompareDefaultOptions, options);
         this.element = elem;
         this.setOptionsFromDOM();
         this.eventMoveAll = this.eventMoveAll.bind(this);
         this.eventResize = this.eventResize.bind(this);
         this.eventStartAll = this.eventStartAll.bind(this);
-        this.eventStopAll = this.eventStopAll.bind(this);
-        this.create();
         this.events = {
             RESIZE: new Event('resize'),
             SLIDERMOVE: new Event('slidermove'),
         };
+        this.create();
     }
 
     /**
@@ -199,16 +201,14 @@ class ImageCompare { // eslint-disable-line no-unused-vars
         this.element.dispatchEvent(this.events.SLIDERMOVE);
     }
 
-    eventStopAll() {
-        document.removeEventListener('mousemove', this.eventMoveAll);
-        document.removeEventListener('touchmove', this.eventMoveAll);
+    shouldMoveAll(shouldMove){
+        const method = shouldMove ? 'addEventListener' : 'removeEventListener';
+        document[method](this.deviceEvents.move, this.eventMoveAll);
     }
 
     eventStartAll() {
-        document.addEventListener('mousemove', this.eventMoveAll);
-        document.addEventListener('touchmove', this.eventMoveAll);
-        document.addEventListener('mouseup', this.eventStopAll);
-        document.addEventListener('touchend', this.eventStopAll);
+        this.shouldMoveAll(true);
+        document.addEventListener(this.deviceEvents.up, () => { this.shouldMoveAll(false) });
     }
 
     eventResize() {
@@ -224,8 +224,7 @@ class ImageCompare { // eslint-disable-line no-unused-vars
      * Create the component events.
      */
     createEvents() {
-        this.slider.addEventListener('mousedown', this.eventStartAll);
-        this.slider.addEventListener('touchstart', this.eventStartAll);
+        this.slider.addEventListener(this.deviceEvents.down, this.eventStartAll);
         window.addEventListener('resize', this.eventResize);
     }
 

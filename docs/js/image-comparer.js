@@ -9,6 +9,18 @@
 
 "use strict";
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(n); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -43,18 +55,30 @@ var ImageCompare = /*#__PURE__*/function () {
 
     _classCallCheck(this, ImageCompare);
 
+    var isDeviceMobile = ('ontouchstart' in document.documentElement);
+
+    var _ref = isDeviceMobile ? ['touchend', 'touchstart', 'touchmove'] : ['mouseup', 'mousedown', 'mousemove'],
+        _ref2 = _slicedToArray(_ref, 3),
+        up = _ref2[0],
+        down = _ref2[1],
+        move = _ref2[2];
+
+    this.deviceEvents = {
+      up: up,
+      down: down,
+      move: move
+    };
     this.options = Object.assign({}, ImageCompareDefaultOptions, options);
     this.element = elem;
     this.setOptionsFromDOM();
     this.eventMoveAll = this.eventMoveAll.bind(this);
     this.eventResize = this.eventResize.bind(this);
     this.eventStartAll = this.eventStartAll.bind(this);
-    this.eventStopAll = this.eventStopAll.bind(this);
-    this.create();
     this.events = {
       RESIZE: new Event('resize'),
       SLIDERMOVE: new Event('slidermove')
     };
+    this.create();
   }
   /**
    * Set the options from DOM data-*
@@ -253,18 +277,20 @@ var ImageCompare = /*#__PURE__*/function () {
       this.element.dispatchEvent(this.events.SLIDERMOVE);
     }
   }, {
-    key: "eventStopAll",
-    value: function eventStopAll() {
-      document.removeEventListener('mousemove', this.eventMoveAll);
-      document.removeEventListener('touchmove', this.eventMoveAll);
+    key: "shouldMoveAll",
+    value: function shouldMoveAll(shouldMove) {
+      var method = shouldMove ? 'addEventListener' : 'removeEventListener';
+      document[method](this.deviceEvents.move, this.eventMoveAll);
     }
   }, {
     key: "eventStartAll",
     value: function eventStartAll() {
-      document.addEventListener('mousemove', this.eventMoveAll);
-      document.addEventListener('touchmove', this.eventMoveAll);
-      document.addEventListener('mouseup', this.eventStopAll);
-      document.addEventListener('touchend', this.eventStopAll);
+      var _this2 = this;
+
+      this.shouldMoveAll(true);
+      document.addEventListener(this.deviceEvents.up, function () {
+        _this2.shouldMoveAll(false);
+      });
     }
   }, {
     key: "eventResize",
@@ -286,8 +312,7 @@ var ImageCompare = /*#__PURE__*/function () {
   }, {
     key: "createEvents",
     value: function createEvents() {
-      this.slider.addEventListener('mousedown', this.eventStartAll);
-      this.slider.addEventListener('touchstart', this.eventStartAll);
+      this.slider.addEventListener(this.deviceEvents.down, this.eventStartAll);
       window.addEventListener('resize', this.eventResize);
     }
     /**
