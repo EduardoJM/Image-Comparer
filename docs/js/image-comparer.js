@@ -9,6 +9,14 @@
 
 "use strict";
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -74,10 +82,24 @@ var ImageCompare = /*#__PURE__*/function () {
     this.eventMoveAll = this.eventMoveAll.bind(this);
     this.eventResize = this.eventResize.bind(this);
     this.eventStartAll = this.eventStartAll.bind(this);
+    this.aspectRatios = {
+      '0': 0,
+      '4/3': 4 / 3,
+      '16/9': 16 / 9,
+      '21/9': 21 / 9
+    };
+    this.defaultAspectRatio = '16/9';
     this.events = {
       RESIZE: new Event('resize'),
       SLIDERMOVE: new Event('slidermove')
     };
+
+    var _this$applySize = this.applySize(),
+        elementWidth = _this$applySize.elementWidth,
+        elementHeight = _this$applySize.elementHeight;
+
+    this.elementWidth = elementWidth;
+    this.elementHeight = elementHeight;
     this.create();
   }
   /**
@@ -121,25 +143,24 @@ var ImageCompare = /*#__PURE__*/function () {
   }, {
     key: "applySize",
     value: function applySize() {
-      // set the element width
-      if (this.options.width.toString().endsWith('%') || this.options.width.toString().endsWith('px')) {
-        this.element.style.width = this.options.width;
-      } else {
-        this.element.style.width = "".concat(this.options.width, "px");
-      } // get parsed width
+      var _this$options = this.options,
+          width = _this$options.width,
+          height = _this$options.height;
+      var measureRule = /\d+(px|%)/; // get parsed width and height
+
+      var _ImageCompare$utilGet = ImageCompare.utilGetDimension([width, height]),
+          _ImageCompare$utilGet2 = _slicedToArray(_ImageCompare$utilGet, 2),
+          elementWidth = _ImageCompare$utilGet2[0],
+          elementHeight = _ImageCompare$utilGet2[1]; // compute and set the element height
 
 
-      var elementWidth = ImageCompare.utilGetWidth(this.element); // compute and set the element height
+      var aspectRatio = height in this.aspectRatios ? height : this.defaultAspectRatio;
+      elementHeight = this.utilAspectRatioH(elementWidth, aspectRatio); // set the element width and height
 
-      var elementHeight = parseInt(this.options.height, 10);
-
-      if (this.options.height === '16/9' || this.options.height === '21/9' || this.options.height === '4/3') {
-        elementHeight = ImageCompare.utilAspectRatioH(elementWidth, this.options.height);
-      } else if (this.options.height === 'auto') {
-        elementHeight = ImageCompare.utilAspectRatioH(elementWidth, '16/9');
-      }
-
-      this.element.style.height = "".concat(elementHeight, "px");
+      ImageCompare.insertElementStyle(this.element, {
+        width: measureRule.test(String(width)) ? width : "".concat(width, "px"),
+        height: "".concat(elementHeight, "px")
+      });
       return {
         elementWidth: elementWidth,
         elementHeight: elementHeight
@@ -153,25 +174,22 @@ var ImageCompare = /*#__PURE__*/function () {
   }, {
     key: "applySizeComplete",
     value: function applySizeComplete() {
-      var _this$applySize = this.applySize(),
-          elementWidth = _this$applySize.elementWidth,
-          elementHeight = _this$applySize.elementHeight; // console.log(element_height);
-      // resize the images
-
+      var elementWidth = this.elementWidth,
+          elementHeight = this.elementHeight; // resize the images
 
       var images = this.element.querySelectorAll('.image-wrapper');
       images.forEach(function (image) {
-        var element = image;
-        element.style.width = "".concat(elementWidth, "px");
-        element.style.height = "".concat(elementHeight, "px");
+        ImageCompare.insertElementStyle(image, {
+          width: "".concat(elementWidth, "px"),
+          height: "".concat(elementHeight, "px")
+        });
       }); // resize the container overlay
 
-      this.containerOverlay.style.width = "".concat(elementWidth / 2, "px"); // reposition the slider
+      ImageCompare.insertElementStyle(this.containerOverlay, {
+        width: "".concat(elementWidth / 2, "px")
+      }); // reposition the slider
 
-      var sliderTop = elementHeight / 2 - ImageCompare.utilGetHeight(this.slider) / 2;
-      var sliderLeft = elementWidth / 2 - ImageCompare.utilGetWidth(this.slider) / 2;
-      this.slider.style.top = "".concat(sliderTop, "px");
-      this.slider.style.left = "".concat(sliderLeft, "px");
+      this.adjustSlider();
       return {
         elementWidth: elementWidth,
         elementHeight: elementHeight
@@ -186,68 +204,55 @@ var ImageCompare = /*#__PURE__*/function () {
     value: function createStructure() {
       var _this = this;
 
-      var id = this.element.getAttribute('id');
-
-      if (id == null || id === undefined || id === '') {
-        id = ImageCompare.utilGenerateId('image-compare');
-        this.element.setAttribute('id', id);
-      } // add image-compare to element classList
-
+      var id = this.element.getAttribute('id') || ImageCompare.utilGenerateId('image-compare');
+      var elementWidth = this.elementWidth,
+          elementHeight = this.elementHeight;
+      this.element.setAttribute('id', id); // add image-compare to element classList
 
       this.element.classList.add('image-compare');
+      this.container = ImageCompare.createElement({
+        classList: 'image-container',
+        container: this.element
+      });
+      this.containerOverlay = ImageCompare.createElement({
+        classList: 'image-container-overlay',
+        style: {
+          width: "".concat(elementWidth / 2, "px")
+        },
+        container: this.element
+      });
+      this.slider = ImageCompare.createElement({
+        classList: 'image-slider',
+        beforeAppend: function beforeAppend(el) {
+          var sliderClass = _this.options.sliderClass; // check if is not undefined, null, '' or []
 
-      var _this$applySize2 = this.applySize(),
-          elementWidth = _this$applySize2.elementWidth,
-          elementHeight = _this$applySize2.elementHeight; // create the container and overlay and append to element
+          if (!(!sliderClass || Number(sliderClass) === 0)) {
+            var arr = typeof sliderClass === 'string' ? sliderClass.split(' ') : sliderClass;
+            arr.forEach(function (cl) {
+              el.classList.add(cl);
+            });
+          }
 
-
-      this.container = document.createElement('div');
-      this.container.classList.add('image-container');
-      this.element.append(this.container);
-      this.containerOverlay = document.createElement('div');
-      this.containerOverlay.classList.add('image-container-overlay');
-      this.containerOverlay.style.width = "".concat(elementWidth / 2, "px");
-      this.element.append(this.containerOverlay); // create the slider and append to element
-
-      this.slider = document.createElement('div');
-      this.slider.classList.add('image-slider');
-
-      if (this.options.sliderClass != null && this.options.sliderClass !== undefined && this.options.sliderClass !== '' && this.options.sliderClass !== []) {
-        if (typeof this.options.sliderClass === 'string') {
-          var arr = this.options.sliderClass.split(' ');
-          arr.forEach(function (cl) {
-            _this.slider.classList.add(cl);
-          });
-        } else if (Array.isArray(this.options.sliderClass)) {
-          this.options.sliderClass.forEach(function (cl) {
-            _this.slider.classList.add(cl);
-          });
-        }
-      }
-
-      if (this.options.sliderContent != null && this.options.sliderContent !== undefined && this.options.sliderContent !== '') {
-        this.slider.innerHTML = this.options.sliderContent;
-      }
-
-      this.element.append(this.slider);
-      var sliderTop = elementHeight / 2 - ImageCompare.utilGetHeight(this.slider) / 2;
-      var sliderLeft = elementWidth / 2 - ImageCompare.utilGetWidth(this.slider) / 2;
-      this.slider.style.top = "".concat(sliderTop, "px");
-      this.slider.style.left = "".concat(sliderLeft, "px"); // get and prepare the the images
+          if (_this.options.sliderContent) {
+            el.innerHTML = sliderClass.sliderContent;
+          }
+        },
+        container: this.element
+      });
+      this.adjustSlider(); // get and prepare the the images
 
       var images = this.element.querySelectorAll('img');
       images.forEach(function (element, index) {
-        var img = document.createElement('div');
-        img.classList.add('image-wrapper');
-        img.style.width = "".concat(elementWidth, "px");
-        img.style.height = "".concat(elementHeight, "px");
-        img.style.backgroundImage = "url(".concat(element.src, ")");
-
-        if (index === 0) {
-          _this.container.append(img);
-        } else {
-          _this.containerOverlay.append(img);
-        }
+        var container = index === 0 ? _this.container : _this.containerOverlay;
+        ImageCompare.createElement({
+          classList: 'image-wrapper',
+          style: {
+            width: "".concat(elementWidth, "px"),
+            height: "".concat(elementHeight, "px"),
+            backgroundImage: "url(".concat(element.src, ")")
+          },
+          container: container
+        });
       });
     }
   }, {
@@ -255,22 +260,15 @@ var ImageCompare = /*#__PURE__*/function () {
     value: function eventMoveAll(e) {
       var w = ImageCompare.utilGetWidth(this.element);
 
-      var _ImageCompare$utilGet = ImageCompare.utilGetCursorPosition(this.element, e),
-          x = _ImageCompare$utilGet.x;
+      var _ImageCompare$utilGet3 = ImageCompare.utilGetCursorPosition(this.element, e),
+          x = _ImageCompare$utilGet3.x;
 
-      if (x < 0) {
-        x = 0;
-      }
-
-      if (x > w) {
-        x = w;
-      }
-
+      x = Math.max(0, Math.min(x, w));
       this.containerOverlay.style.width = "".concat(x, "px");
       var leftPos = x - ImageCompare.utilGetWidth(this.slider) / 2;
       this.slider.style.left = "".concat(leftPos, "px");
 
-      if (this.options.onSliderMove != null && this.options.onSliderMove !== undefined) {
+      if (this.options.onSliderMove) {
         this.options.onSliderMove(x, leftPos, this.slider);
       }
 
@@ -299,11 +297,9 @@ var ImageCompare = /*#__PURE__*/function () {
           elementWidth = _this$applySizeComple.elementWidth,
           elementHeight = _this$applySizeComple.elementHeight;
 
-      if (this.options.onResize != null && this.options.onResize !== undefined) {
-        this.options.onResize(elementWidth, elementHeight, this.element);
-      }
-
       this.element.dispatchEvent(this.events.RESIZE);
+      if (!this.options.onResize) return;
+      this.options.onResize(elementWidth, elementHeight, this.element);
     }
     /**
      * Create the component events.
@@ -315,13 +311,68 @@ var ImageCompare = /*#__PURE__*/function () {
       this.slider.addEventListener(this.deviceEvents.down, this.eventStartAll);
       window.addEventListener('resize', this.eventResize);
     }
+  }, {
+    key: "adjustSlider",
+    value: function adjustSlider() {
+      var sliderTop = this.elementHeight / 2 - ImageCompare.utilGetHeight(this.slider) / 2;
+      var sliderLeft = this.elementWidth / 2 - ImageCompare.utilGetWidth(this.slider) / 2;
+      ImageCompare.insertElementStyle(this.slider, {
+        top: "".concat(sliderTop, "px"),
+        left: "".concat(sliderLeft, "px")
+      });
+    }
+    /**
+     * Utility to insert style into an Element
+     * @param {HTMLElement} el - The Element that will receive style.
+     * @param {object} style - style object.
+     */
+
+  }, {
+    key: "utilAspectRatioH",
+
+    /**
+     * Utility to get the height ratio from a width.
+     * @param {number} width - The width to get the aspect ratio.
+     * @param {string} a - The aspect ratio ('16/9', '21/9', '4/3').
+     */
+    value: function utilAspectRatioH(width, a) {
+      return width / this.aspectRatios[a] || this.aspectRatios['0'];
+    }
+    /**
+     * Utility to generate a random integer.
+     * @param {number} from - The opening interval to the random integer.
+     * @param {number} to - The closing interval to the random integer.
+     */
+
+  }], [{
+    key: "insertElementStyle",
+    value: function insertElementStyle(element, style) {
+      Object.assign(element.style, style);
+    }
+  }, {
+    key: "createElement",
+    value: function createElement(_ref3) {
+      var _ref3$classList = _ref3.classList,
+          classList = _ref3$classList === void 0 ? '' : _ref3$classList,
+          _ref3$style = _ref3.style,
+          style = _ref3$style === void 0 ? {} : _ref3$style,
+          container = _ref3.container,
+          _ref3$beforeAppend = _ref3.beforeAppend,
+          beforeAppend = _ref3$beforeAppend === void 0 ? function () {} : _ref3$beforeAppend;
+      var el = document.createElement('div');
+      el.classList.add(classList);
+      ImageCompare.insertElementStyle(el, style);
+      beforeAppend(el);
+      container.append(el);
+      return el;
+    }
     /**
      * Utility to get the cursor position relative to an Element.
      * @param {HTMLElement} el - The Element to get cursor position relative to this.
      * @param {object} e - Event.
      */
 
-  }], [{
+  }, {
     key: "utilGetCursorPosition",
     value: function utilGetCursorPosition(el, e) {
       var a = el.getBoundingClientRect();
@@ -332,6 +383,17 @@ var ImageCompare = /*#__PURE__*/function () {
         y: py - a.top - window.pageYOffset
       };
     }
+  }, {
+    key: "utilGetDimension",
+    value: function utilGetDimension(strArray) {
+      if (strArray.length === 1) {
+        return String(parseFloat.apply(void 0, _toConsumableArray(strArray)));
+      }
+
+      return strArray.map(function (str) {
+        return String(parseFloat(str));
+      });
+    }
     /**
      * Utility to get the width of an Element.
      * @param {HTMLElement} el - The Element to get the width.
@@ -340,7 +402,7 @@ var ImageCompare = /*#__PURE__*/function () {
   }, {
     key: "utilGetWidth",
     value: function utilGetWidth(el) {
-      return parseFloat(getComputedStyle(el, null).width.replace('px', ''));
+      return ImageCompare.utilGetDimension([getComputedStyle(el, null).width]);
     }
     /**
      * Utility to get the height of an Element.
@@ -350,37 +412,8 @@ var ImageCompare = /*#__PURE__*/function () {
   }, {
     key: "utilGetHeight",
     value: function utilGetHeight(el) {
-      return parseFloat(getComputedStyle(el, null).height.replace('px', ''));
+      return ImageCompare.utilGetDimension([getComputedStyle(el, null).height]);
     }
-    /**
-     * Utility to get the height ratio from a width.
-     * @param {number} width - The width to get the aspect ratio.
-     * @param {string} a - The aspect ratio ('16/9', '21/9', '4/3').
-     */
-
-  }, {
-    key: "utilAspectRatioH",
-    value: function utilAspectRatioH(width, a) {
-      if (a === '16/9') {
-        return width * 9 / 16;
-      }
-
-      if (a === '21/9') {
-        return width * 9 / 21;
-      }
-
-      if (a === '4/3') {
-        return width * 3 / 4;
-      }
-
-      return 0;
-    }
-    /**
-     * Utility to generate a random integer.
-     * @param {number} from - The opening interval to the random integer.
-     * @param {number} to - The closing interval to the random integer.
-     */
-
   }, {
     key: "utilRandomInt",
     value: function utilRandomInt(from, to) {

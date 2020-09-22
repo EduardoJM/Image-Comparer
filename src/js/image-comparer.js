@@ -29,10 +29,20 @@ class ImageCompare { // eslint-disable-line no-unused-vars
         this.eventMoveAll = this.eventMoveAll.bind(this);
         this.eventResize = this.eventResize.bind(this);
         this.eventStartAll = this.eventStartAll.bind(this);
+        this.aspectRatios = {
+            '0': 0,
+            '4/3': 4/3,
+            '16/9': 16/9,
+            '21/9': 21/9,
+        };
+        this.defaultAspectRatio = '16/9';
         this.events = {
             RESIZE: new Event('resize'),
             SLIDERMOVE: new Event('slidermove'),
         };
+        const { elementWidth, elementHeight } = this.applySize();
+        this.elementWidth = elementWidth;
+        this.elementHeight = elementHeight;
         this.create();
     }
 
@@ -66,25 +76,18 @@ class ImageCompare { // eslint-disable-line no-unused-vars
      * Compute and apply the sizes to the component structure.
      */
     applySize() {
-        // set the element width
-        if (this.options.width.toString().endsWith('%')
-            || this.options.width.toString().endsWith('px')) {
-            this.element.style.width = this.options.width;
-        } else {
-            this.element.style.width = `${this.options.width}px`;
-        }
-        // get parsed width
-        const elementWidth = ImageCompare.utilGetWidth(this.element);
+        const { width, height } = this.options;
+        const measureRule = /\d+(px|%)/;
+        // get parsed width and height
+        let [elementWidth, elementHeight] = ImageCompare.utilGetDimension([width, height]);
         // compute and set the element height
-        let elementHeight = parseInt(this.options.height, 10);
-        if (this.options.height === '16/9'
-            || this.options.height === '21/9'
-            || this.options.height === '4/3') {
-            elementHeight = ImageCompare.utilAspectRatioH(elementWidth, this.options.height);
-        } else if (this.options.height === 'auto') {
-            elementHeight = ImageCompare.utilAspectRatioH(elementWidth, '16/9');
-        }
-        this.element.style.height = `${elementHeight}px`;
+        const aspectRatio = (height in this.aspectRatios) ? height : this.defaultAspectRatio;
+        elementHeight = this.utilAspectRatioH(elementWidth, aspectRatio);
+        // set the element width and height
+        ImageCompare.insertElementStyle(this.element, {
+            width : measureRule.test(String(width)) ? width : `${width}px`,
+            height: `${elementHeight}px`
+        });
         return {
             elementWidth,
             elementHeight,
@@ -96,22 +99,19 @@ class ImageCompare { // eslint-disable-line no-unused-vars
      * and to the child images and reposition the slider to center.
      */
     applySizeComplete() {
-        const { elementWidth, elementHeight } = this.applySize();
-        // console.log(element_height);
+        const { elementWidth, elementHeight } = this;
         // resize the images
         const images = this.element.querySelectorAll('.image-wrapper');
         images.forEach((image) => {
-            const element = image;
-            element.style.width = `${elementWidth}px`;
-            element.style.height = `${elementHeight}px`;
+            ImageCompare.insertElementStyle(image, {
+                width: `${elementWidth}px`,
+                height: `${elementHeight}px`
+            });
         });
         // resize the container overlay
-        this.containerOverlay.style.width = `${elementWidth / 2}px`;
+        ImageCompare.insertElementStyle(this.containerOverlay, { width: `${elementWidth / 2}px`});
         // reposition the slider
-        const sliderTop = elementHeight / 2 - ImageCompare.utilGetHeight(this.slider) / 2;
-        const sliderLeft = elementWidth / 2 - ImageCompare.utilGetWidth(this.slider) / 2;
-        this.slider.style.top = `${sliderTop}px`;
-        this.slider.style.left = `${sliderLeft}px`;
+        this.adjustSlider();
         return {
             elementWidth,
             elementHeight,
@@ -122,80 +122,63 @@ class ImageCompare { // eslint-disable-line no-unused-vars
      * Create the Component Structure.
      */
     createStructure() {
-        let id = this.element.getAttribute('id');
-        if (id == null || id === undefined || id === '') {
-            id = ImageCompare.utilGenerateId('image-compare');
-            this.element.setAttribute('id', id);
-        }
+        const id = this.element.getAttribute('id') || ImageCompare.utilGenerateId('image-compare');
+        const { elementWidth, elementHeight } = this;
+        this.element.setAttribute('id', id);
         // add image-compare to element classList
         this.element.classList.add('image-compare');
-        const { elementWidth, elementHeight } = this.applySize();
-        // create the container and overlay and append to element
-        this.container = document.createElement('div');
-        this.container.classList.add('image-container');
-        this.element.append(this.container);
-        this.containerOverlay = document.createElement('div');
-        this.containerOverlay.classList.add('image-container-overlay');
-        this.containerOverlay.style.width = `${elementWidth / 2}px`;
-        this.element.append(this.containerOverlay);
-        // create the slider and append to element
-        this.slider = document.createElement('div');
-        this.slider.classList.add('image-slider');
-        if (this.options.sliderClass != null
-            && this.options.sliderClass !== undefined
-            && this.options.sliderClass !== ''
-            && this.options.sliderClass !== []) {
-            if (typeof this.options.sliderClass === 'string') {
-                const arr = this.options.sliderClass.split(' ');
-                arr.forEach((cl) => {
-                    this.slider.classList.add(cl);
-                });
-            } else if (Array.isArray(this.options.sliderClass)) {
-                this.options.sliderClass.forEach((cl) => {
-                    this.slider.classList.add(cl);
-                });
-            }
-        }
-        if (this.options.sliderContent != null
-            && this.options.sliderContent !== undefined
-            && this.options.sliderContent !== '') {
-            this.slider.innerHTML = this.options.sliderContent;
-        }
-        this.element.append(this.slider);
-        const sliderTop = elementHeight / 2 - ImageCompare.utilGetHeight(this.slider) / 2;
-        const sliderLeft = elementWidth / 2 - ImageCompare.utilGetWidth(this.slider) / 2;
-        this.slider.style.top = `${sliderTop}px`;
-        this.slider.style.left = `${sliderLeft}px`;
+        
+        this.container = ImageCompare.createElement({
+            classList: 'image-container',
+            container: this.element
+        });
+        this.containerOverlay = ImageCompare.createElement({
+            classList: 'image-container-overlay',
+            style: {width: `${elementWidth / 2}px`},
+            container: this.element
+        });
+        this.slider = ImageCompare.createElement({
+            classList: 'image-slider',
+            beforeAppend: (el) => {
+                const { sliderClass } = this.options;
+                // check if is not undefined, null, '' or []
+                if (!(!sliderClass || Number(sliderClass) === 0)) {
+                    const arr = (typeof sliderClass === 'string') ? sliderClass.split(' ') : sliderClass;
+                    arr.forEach((cl) => {
+                        el.classList.add(cl);
+                    });
+                }
+                if (this.options.sliderContent) {
+                    el.innerHTML = sliderClass.sliderContent;
+                }
+            },
+            container: this.element
+        });
+        this.adjustSlider();
         // get and prepare the the images
         const images = this.element.querySelectorAll('img');
         images.forEach((element, index) => {
-            const img = document.createElement('div');
-            img.classList.add('image-wrapper');
-            img.style.width = `${elementWidth}px`;
-            img.style.height = `${elementHeight}px`;
-            img.style.backgroundImage = `url(${element.src})`;
-            if (index === 0) {
-                this.container.append(img);
-            } else {
-                this.containerOverlay.append(img);
-            }
+            const container = (index === 0) ? this.container : this.containerOverlay;
+            ImageCompare.createElement({
+                classList: 'image-wrapper',
+                style: {
+                    width: `${elementWidth}px`,
+                    height: `${elementHeight}px`,
+                    backgroundImage: `url(${element.src})`
+                },
+                container
+            });
         });
     }
 
     eventMoveAll(e) {
         const w = ImageCompare.utilGetWidth(this.element);
         let { x } = ImageCompare.utilGetCursorPosition(this.element, e);
-        if (x < 0) {
-            x = 0;
-        }
-        if (x > w) {
-            x = w;
-        }
+        x = Math.max(0, Math.min(x, w));
         this.containerOverlay.style.width = `${x}px`;
         const leftPos = x - ImageCompare.utilGetWidth(this.slider) / 2;
         this.slider.style.left = `${leftPos}px`;
-        if (this.options.onSliderMove != null
-            && this.options.onSliderMove !== undefined) {
+        if (this.options.onSliderMove) {
             this.options.onSliderMove(x, leftPos, this.slider);
         }
         this.element.dispatchEvent(this.events.SLIDERMOVE);
@@ -213,11 +196,9 @@ class ImageCompare { // eslint-disable-line no-unused-vars
 
     eventResize() {
         const { elementWidth, elementHeight } = this.applySizeComplete();
-        if (this.options.onResize != null
-            && this.options.onResize !== undefined) {
-            this.options.onResize(elementWidth, elementHeight, this.element);
-        }
         this.element.dispatchEvent(this.events.RESIZE);
+        if (!(this.options.onResize)) return;
+        this.options.onResize(elementWidth, elementHeight, this.element);
     }
 
     /**
@@ -226,6 +207,32 @@ class ImageCompare { // eslint-disable-line no-unused-vars
     createEvents() {
         this.slider.addEventListener(this.deviceEvents.down, this.eventStartAll);
         window.addEventListener('resize', this.eventResize);
+    }
+    adjustSlider(){
+        const sliderTop = this.elementHeight / 2 - ImageCompare.utilGetHeight(this.slider) / 2;
+        const sliderLeft = this.elementWidth / 2 - ImageCompare.utilGetWidth(this.slider) / 2;
+        ImageCompare.insertElementStyle(this.slider, {
+            top: `${sliderTop}px`,
+            left: `${sliderLeft}px`
+        });
+    }
+    /**
+     * Utility to insert style into an Element
+     * @param {HTMLElement} el - The Element that will receive style.
+     * @param {object} style - style object.
+     */
+
+    static insertElementStyle(element, style){
+        Object.assign(element.style, style);
+    }
+
+    static createElement({ classList='', style={}, container, beforeAppend = ()=>{}}) {
+        const el = document.createElement('div');
+        el.classList.add(classList);
+        ImageCompare.insertElementStyle(el, style);
+        beforeAppend(el);
+        container.append(el);
+        return el;
     }
 
     /**
@@ -243,12 +250,18 @@ class ImageCompare { // eslint-disable-line no-unused-vars
         };
     }
 
+    static utilGetDimension(strArray) {
+        if(strArray.length === 1){
+            return String(parseFloat(...strArray));
+        }
+        return strArray.map(str => String(parseFloat(str)));
+    }
     /**
      * Utility to get the width of an Element.
      * @param {HTMLElement} el - The Element to get the width.
      */
     static utilGetWidth(el) {
-        return parseFloat(getComputedStyle(el, null).width.replace('px', ''));
+        return ImageCompare.utilGetDimension([getComputedStyle(el, null).width]);
     }
 
     /**
@@ -256,7 +269,7 @@ class ImageCompare { // eslint-disable-line no-unused-vars
      * @param {HTMLElement} el - The Element to get the height.
      */
     static utilGetHeight(el) {
-        return parseFloat(getComputedStyle(el, null).height.replace('px', ''));
+        return ImageCompare.utilGetDimension([getComputedStyle(el, null).height]);
     }
 
     /**
@@ -264,17 +277,8 @@ class ImageCompare { // eslint-disable-line no-unused-vars
      * @param {number} width - The width to get the aspect ratio.
      * @param {string} a - The aspect ratio ('16/9', '21/9', '4/3').
      */
-    static utilAspectRatioH(width, a) {
-        if (a === '16/9') {
-            return (width * 9) / 16;
-        }
-        if (a === '21/9') {
-            return (width * 9) / 21;
-        }
-        if (a === '4/3') {
-            return (width * 3) / 4;
-        }
-        return 0;
+    utilAspectRatioH(width, a) {
+        return (width / this.aspectRatios[a]) || this.aspectRatios['0'];
     }
 
     /**
