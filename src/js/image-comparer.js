@@ -30,12 +30,12 @@ class ImageCompare { // eslint-disable-line no-unused-vars
         this.eventResize = this.eventResize.bind(this);
         this.eventStartAll = this.eventStartAll.bind(this);
         this.aspectRatios = {
-            '0': 0,
             '4/3': 4/3,
             '16/9': 16/9,
             '21/9': 21/9,
+            'auto': 16/9,
         };
-        this.defaultAspectRatio = '16/9';
+        //this.defaultAspectRatio = '16/9';
         this.events = {
             RESIZE: new Event('resize'),
             SLIDERMOVE: new Event('slidermove'),
@@ -77,17 +77,17 @@ class ImageCompare { // eslint-disable-line no-unused-vars
      */
     applySize() {
         const { width, height } = this.options;
-        const measureRule = /\d+(px|%)/;
-        // get parsed width and height
-        let [elementWidth, elementHeight] = ImageCompare.utilGetDimension([width, height]);
-        // compute and set the element height
-        const aspectRatio = (height in this.aspectRatios) ? height : this.defaultAspectRatio;
-        elementHeight = this.utilAspectRatioH(elementWidth, aspectRatio);
-        // set the element width and height
-        ImageCompare.insertElementStyle(this.element, {
-            width : measureRule.test(String(width)) ? width : `${width}px`,
-            height: `${elementHeight}px`
-        });
+        const measureRule = /\d+(px|%|em|rem)/;
+        this.element.style.width = measureRule.test(String(width)) ? width : `${width}px`;
+        const elementWidth = ImageCompare.utilGetWidth(this.element);
+        let elementHeight = 0;
+        if (height in this.aspectRatios) {
+            elementHeight = 1 / (this.aspectRatios[height] / elementWidth);
+            this.element.style.height = `${elementHeight}px`;
+        } else {
+            this.element.style.height = measureRule.test(String(height)) ? height : `${height}px`;
+            elementHeight = ImageCompare.utilGetHeight(this.element);
+        }
         return {
             elementWidth,
             elementHeight,
@@ -208,6 +208,7 @@ class ImageCompare { // eslint-disable-line no-unused-vars
         this.slider.addEventListener(this.deviceEvents.down, this.eventStartAll);
         window.addEventListener('resize', this.eventResize);
     }
+
     adjustSlider(){
         const sliderTop = this.elementHeight / 2 - ImageCompare.utilGetHeight(this.slider) / 2;
         const sliderLeft = this.elementWidth / 2 - ImageCompare.utilGetWidth(this.slider) / 2;
@@ -216,12 +217,12 @@ class ImageCompare { // eslint-disable-line no-unused-vars
             left: `${sliderLeft}px`
         });
     }
+
     /**
      * Utility to insert style into an Element
      * @param {HTMLElement} el - The Element that will receive style.
      * @param {object} style - style object.
      */
-
     static insertElementStyle(element, style){
         Object.assign(element.style, style);
     }
@@ -256,6 +257,7 @@ class ImageCompare { // eslint-disable-line no-unused-vars
         }
         return strArray.map(str => String(parseFloat(str)));
     }
+
     /**
      * Utility to get the width of an Element.
      * @param {HTMLElement} el - The Element to get the width.

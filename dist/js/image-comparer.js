@@ -83,12 +83,12 @@ var ImageCompare = /*#__PURE__*/function () {
     this.eventResize = this.eventResize.bind(this);
     this.eventStartAll = this.eventStartAll.bind(this);
     this.aspectRatios = {
-      '0': 0,
       '4/3': 4 / 3,
       '16/9': 16 / 9,
-      '21/9': 21 / 9
-    };
-    this.defaultAspectRatio = '16/9';
+      '21/9': 21 / 9,
+      'auto': 16 / 9
+    }; //this.defaultAspectRatio = '16/9';
+
     this.events = {
       RESIZE: new Event('resize'),
       SLIDERMOVE: new Event('slidermove')
@@ -146,21 +146,19 @@ var ImageCompare = /*#__PURE__*/function () {
       var _this$options = this.options,
           width = _this$options.width,
           height = _this$options.height;
-      var measureRule = /\d+(px|%)/; // get parsed width and height
+      var measureRule = /\d+(px|%|em|rem)/;
+      this.element.style.width = measureRule.test(String(width)) ? width : "".concat(width, "px");
+      var elementWidth = ImageCompare.utilGetWidth(this.element);
+      var elementHeight = 0;
 
-      var _ImageCompare$utilGet = ImageCompare.utilGetDimension([width, height]),
-          _ImageCompare$utilGet2 = _slicedToArray(_ImageCompare$utilGet, 2),
-          elementWidth = _ImageCompare$utilGet2[0],
-          elementHeight = _ImageCompare$utilGet2[1]; // compute and set the element height
+      if (height in this.aspectRatios) {
+        elementHeight = 1 / (this.aspectRatios[height] / elementWidth);
+        this.element.style.height = "".concat(elementHeight, "px");
+      } else {
+        this.element.style.height = measureRule.test(String(height)) ? height : "".concat(height, "px");
+        elementHeight = ImageCompare.utilGetHeight(this.element);
+      }
 
-
-      var aspectRatio = height in this.aspectRatios ? height : this.defaultAspectRatio;
-      elementHeight = this.utilAspectRatioH(elementWidth, aspectRatio); // set the element width and height
-
-      ImageCompare.insertElementStyle(this.element, {
-        width: measureRule.test(String(width)) ? width : "".concat(width, "px"),
-        height: "".concat(elementHeight, "px")
-      });
       return {
         elementWidth: elementWidth,
         elementHeight: elementHeight
@@ -260,8 +258,8 @@ var ImageCompare = /*#__PURE__*/function () {
     value: function eventMoveAll(e) {
       var w = ImageCompare.utilGetWidth(this.element);
 
-      var _ImageCompare$utilGet3 = ImageCompare.utilGetCursorPosition(this.element, e),
-          x = _ImageCompare$utilGet3.x;
+      var _ImageCompare$utilGet = ImageCompare.utilGetCursorPosition(this.element, e),
+          x = _ImageCompare$utilGet.x;
 
       x = Math.max(0, Math.min(x, w));
       this.containerOverlay.style.width = "".concat(x, "px");
