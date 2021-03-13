@@ -3,7 +3,11 @@
   "version": "1.0.1",
   "description": "",
   "main": "src/js/image-comparer.js",
-  "scripts": {},
+  "scripts": {
+    "css": "gulp css",
+    "js": "gulp js",
+    "build": "gulp css && gulp js"
+  },
   "keywords": [],
   "author": "",
   "license": "MIT",
@@ -22,7 +26,6 @@
     "gulp-header": "^2.0.9",
     "gulp-line-ending-corrector": "^1.0.3",
     "gulp-rename": "^2.0.0",
-    "gulp-sass": "^4.1.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
     "pump": "^3.0.0"

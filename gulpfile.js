@@ -5,7 +5,6 @@ const lec = require('gulp-line-ending-corrector');
 const header = require('gulp-header');
 const version = require('./package.json').version;
 // sass
-const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const cleanCss = require('gulp-clean-css');
 const sourcemaps = require('gulp-sourcemaps');
@@ -17,10 +16,10 @@ const babel = require('gulp-babel');
 /**
  * PATHS
  */
-// SCSS
-const mainScss = './src/scss/image-comparer.scss';
-const scssInput = './src/scss/**/*.scss';
-const scssOutput = './dist/css';
+// CSS
+const mainCss = './src/css/image-comparer.css';
+const cssInput = './src/css/**/*.css';
+const cssOutput = './dist/css';
 // JavaScript
 const jsInput = ['./src/js/**/*.js', '!./src/js/**/_*.js'];
 const jsOutput = './dist/js/';
@@ -46,22 +45,21 @@ function onError(err) {
     this.emit('end');
 }
 
-gulp.task('sass', function (callback) {
+gulp.task('css', function (callback) {
     pump([
-        gulp.src(mainScss),
+        gulp.src(mainCss),
         lec(),
         sourcemaps.init(),
-        sass().on('error', onError),
         autoprefixer(),
         header(licenseHeader),
         rename("image-comparer.css"),
-        gulp.dest(scssOutput),
+        gulp.dest(cssOutput),
         gulp.dest(`${docsOutput}/css`),
         sourcemaps.write(),
         cleanCss(),
         rename("image-comparer.min.css"),
         header(licenseHeader),
-        gulp.dest(scssOutput),
+        gulp.dest(cssOutput),
         gulp.dest(`${docsOutput}/css`),
     ], callback);
 });
@@ -89,6 +87,6 @@ gulp.task('watchJS', function () {
     return gulp.watch(jsInput, gulp.series(['js']));
 });
 
-gulp.task('watchSASS', function() {
-    return gulp.watch(scssInput, gulp.series(['sass']));
+gulp.task('watchCSS', function() {
+    return gulp.watch(cssInput, gulp.series(['css']));
 });
