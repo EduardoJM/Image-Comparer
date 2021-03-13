@@ -149,7 +149,7 @@ class ImageCompare { // eslint-disable-line no-unused-vars
                     });
                 }
                 if (this.options.sliderContent) {
-                    el.innerHTML = sliderClass.sliderContent;
+                    el.innerHTML = this.options.sliderContent;
                 }
             },
             container: this.element

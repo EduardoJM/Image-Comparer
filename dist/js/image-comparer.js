@@ -232,7 +232,7 @@ var ImageCompare = /*#__PURE__*/function () {
           }
 
           if (_this.options.sliderContent) {
-            el.innerHTML = sliderClass.sliderContent;
+            el.innerHTML = _this.options.sliderContent;
           }
         },
         container: this.element
