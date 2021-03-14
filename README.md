@@ -48,7 +48,7 @@ For more informations see the [documentation](https://eduardojm.github.io/Image-
 
 ## Building
 
-In the `./dist/` folder has a builded distribution of the javascript and the css. The source javascript and sass files is disponible in the `./src/` folder and can be builded using the gulp.
+In the `./dist/` folder has a builded distribution of the javascript and the css. The source javascript and css files is disponible in the `./src/` folder and can be builded using the gulp.
 
 ### Clone the Repository
 
@@ -65,10 +65,10 @@ npm install
 
 ### Run Gulp Task(s)
 
-To build the sass and the javascript files, run the tasks:
+To build the css and the javascript files, run the tasks:
 
 ```bash
-gulp sass
+gulp css
 gulp js
 ```
 
@@ -78,8 +78,8 @@ If you want to watch for javascript source files modification, use the task:
 gulp watchJS
 ```
 
-And if you want to watch for sass source files modification, use the task:
+And if you want to watch for css source files modification, use the task:
 
 ```bash
-gulp watchSASS
+gulp watchcss
 ```

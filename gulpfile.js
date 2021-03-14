@@ -4,7 +4,7 @@ const pump = require('pump');
 const lec = require('gulp-line-ending-corrector');
 const header = require('gulp-header');
 const version = require('./package.json').version;
-// sass
+
 const autoprefixer = require('gulp-autoprefixer');
 const cleanCss = require('gulp-clean-css');
 const sourcemaps = require('gulp-sourcemaps');
