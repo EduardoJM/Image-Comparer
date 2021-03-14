@@ -1,15 +1,18 @@
 {
   "name": "materialize-image-comparer",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "",
-  "main": "src/js/image-comparer.js",
+  "main": "dist/js/image-comparer.js",
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "css": "gulp css",
     "js": "gulp js",
     "build": "gulp css && gulp js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["image-comparer", "image", "component"],
+  "author": "Eduardo Oliveira <eduardo_y05@outlook.com>",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.9.0",

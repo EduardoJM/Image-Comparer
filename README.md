@@ -17,13 +17,13 @@ Includes the image comparer css and javascript.
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/EduardoJM/Image-Comparer@1.0.2/dist/css/image-comparer.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/EduardoJM/Image-Comparer@1.0.3/dist/css/image-comparer.min.css" />
     <title>Document</title>
 </head>
 <body>
 
     
-    <script src="https://cdn.jsdelivr.net/gh/EduardoJM/Image-Comparer@1.0.2/dist/js/image-comparer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/EduardoJM/Image-Comparer@1.0.3/dist/js/image-comparer.min.js"></script>
 </body>
 </html>
 ```
